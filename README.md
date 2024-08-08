@@ -72,10 +72,9 @@ project-root/
 
 ### Installation
 
-1. **Clone the repository**:
+1. **In CMD, clone the repository**:
     
     ```bash
-    bashCopy code
     git clone https://github.com/Rajiv-Rago/Bowling-Shoes-Rental-Service.git
     cd bowling-shoes-rental
     
@@ -84,7 +83,6 @@ project-root/
 2. **Run the application with Docker**:
     
     ```bash
-    bashCopy code
     docker-compose up --build
     
     ```
