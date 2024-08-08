@@ -11,5 +11,3 @@ services:
       - SUPABASE_API_KEY=${SUPABASE_API_KEY}
       - LAMINI_API_KEY=${LAMINI_API_KEY}
 
-volumes:
-  postgres_data:
