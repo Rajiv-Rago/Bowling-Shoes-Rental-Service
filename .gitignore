@@ -5,3 +5,5 @@ app/__pycache__
 app/endpoints/__pycache__
 
 /"training data"
+
+.env

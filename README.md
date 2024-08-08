@@ -38,15 +38,12 @@ The discount model for the bowling shoe rental service is based on the following
 
 ### Environment Variables
 
-Edit the `.env` file in the root directory and add the following:
+Create a `.env` file in the root directory and add the following:
 
 ```
-envCopy code
-DATABASE_URL=your_supabase_database_url
 SUPABASE_URL=your_supabase_url
 SUPABASE_API_KEY=your_supabase_api_key
-LAMINI_API_KEY=your_lamini_api_key
-
+LLM_API_KEY=your_lamini_api_key
 ```
 
 ### Directory Structure
