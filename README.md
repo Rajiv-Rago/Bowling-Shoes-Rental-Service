@@ -100,7 +100,6 @@ project-root/
 - **Create Customer**:
     
     ```bash
-    bashCopy code
     curl -X POST "http://localhost:8000/customers/add?name=John%20Doe&age=30&contact_info=john@example.com&is_disabled=n&medical_conditions=none" -H "accept: application/json"
     
     ```
@@ -108,7 +107,6 @@ project-root/
 - **Get Customers**:
     
     ```bash
-    bashCopy code
     curl -X POST "http://localhost:8000/customers/get?name=John%20Doe" -H "accept: application/json"
 
     
