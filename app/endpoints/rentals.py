@@ -1,49 +1,39 @@
 from fastapi import APIRouter, Request
 from ..database import *
+from ..tools.base import ToolContext
+from ..tools.discount_tools import GetBestDiscountTool
 import json
-import lamini
-
 
 router = APIRouter()
 table = "rentals"
-LLM_API_KEY = os.getenv("LLM_API_KEY")
+
 
 @router.post("/add")
 async def add_record(
-    name: str, 
-    rental_date: str, 
-    shoe_size: float, 
-    rental_fee: float, 
+    name: str,
+    rental_date: str,
+    shoe_size: float,
+    rental_fee: float,
 ):
-    
-    customer = get({"name": name}, "customers")[0]
-    
+    """Create a new rental with automatic discount calculation.
 
-    input = f"""
-    The discount model for the bowling shoe rental service will be based on the following criteria:
-    Age:
-    Age 0-12: 20% discount
-    Age 13-18: 10% discount
-    Age 65 and above: 15% discount
-    Disability Status:
-    Disabled: 25% discount
-    Pre-existing Medical Conditions:
-    Diabetes: 10% discount
-    Hypertension: 10% discount
-    Chronic Condition: 10% discount
-
-    What would be the discount for a customer with the following attributes?
-    Age: {customer["age"]}
-    Disability Status: {customer["is_disabled"]}
-    Pre-existing Medical Conditions: {customer["medical_conditions"]}
-
-    Choose the highest discount percentage in decimal. Return a simple float.
+    The discount is calculated deterministically using the tools system
+    based on customer age, disability status, and medical conditions.
     """
+    customer = get({"name": name}, "customers")[0]
 
-    llm = lamini.Lamini(api_key=LLM_API_KEY, model_name="meta-llama/Meta-Llama-3.1-8B-Instruct")
-    discount = float(llm.generate(input, output_type={"Response":"str"})["Response"])
+    # Use the discount tool to calculate the best discount
+    discount_tool = GetBestDiscountTool()
+    context = ToolContext()
 
-    print(discount)
+    discount_result = await discount_tool.execute(
+        context,
+        age=customer["age"],
+        is_disabled=customer.get("is_disabled", False),
+        medical_conditions=customer.get("medical_conditions", "")
+    )
+
+    discount = discount_result["best_discount"]
 
     data = {
         "customer_id": customer["id"],
@@ -56,14 +46,17 @@ async def add_record(
 
     response = add(table, data)
 
-    return json.dumps(response[0])
-    return ""
+    return json.dumps({
+        **response[0],
+        "discount_explanation": discount_result["explanation"]
+    })
+
 
 @router.post("/remove")
 async def remove_record(request: Request):
     response = delete(request, table)
-
     return json.dumps({"message": "Rental record removed successfully"})
+
 
 @router.get("/get")
 async def get_records(request: Request):
